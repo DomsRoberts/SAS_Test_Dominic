@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -25,11 +26,42 @@ namespace ConstructionLine.CodingChallenge
             var allShirts = results.ToArray();
             var sw = new Stopwatch();
             sw.Start();
-            var sizes = allShirts.GroupBy(s => s.Size).Select(s => new SizeCount(s.Key, s.Count()));
-            var colors = allShirts.GroupBy(s => s.Color).Select(s => new ColorCount(s.Key, s.Count()));
+            var sizes = allShirts.GroupBy(s => s.Size);
+            var colors = allShirts.GroupBy(s => s.Color);
             sw.Stop();
 
-            return new SearchResults(allShirts, sizes, colors);
+            var allSizes = CreateSizeCounts(sizes);
+            var allColors = CreateColorCounts(colors);
+
+            return new SearchResults(allShirts, allSizes, allColors);
+        }
+
+        private IEnumerable<SizeCount> CreateSizeCounts(IEnumerable<IGrouping<IHaveAnId, Shirt>> sizes)
+        {
+            var sizeCounts = Size.All.Select(s => CreateSizeCount(s, sizes)).ToArray();
+
+            return sizeCounts;
+        }
+
+        private SizeCount CreateSizeCount(Size size, IEnumerable<IGrouping<IHaveAnId, Shirt>> sizes)
+        {
+            var resultSet = sizes.FirstOrDefault(s => s.Key.Id.Equals(size.Id));
+
+            return new SizeCount(size, resultSet?.Count() ?? 0);
+        }
+
+        private IEnumerable<ColorCount> CreateColorCounts(IEnumerable<IGrouping<IHaveAnId, Shirt>> colors)
+        {
+            var colorCounts = Color.All.Select(s => CreateColorCount(s, colors)).ToArray();
+
+            return colorCounts;
+        }
+
+        private ColorCount CreateColorCount(Color color, IEnumerable<IGrouping<IHaveAnId, Shirt>> colors)
+        {
+            var resultSet = colors.FirstOrDefault(s => s.Key.Id.Equals(color.Id));
+
+            return new ColorCount(color, resultSet?.Count() ?? 0);
         }
     }
 }

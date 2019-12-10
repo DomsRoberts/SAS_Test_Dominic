@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConstructionLine.CodingChallenge
 {
-    public class Color
+    public class Color : IHaveAnId
     {
         public Guid Id { get; }
 

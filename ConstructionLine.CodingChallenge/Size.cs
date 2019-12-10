@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConstructionLine.CodingChallenge
 {
-    public class Size
+    public class Size : IHaveAnId
     {
         public Guid Id { get; }
 
